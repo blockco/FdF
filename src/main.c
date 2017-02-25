@@ -16,7 +16,7 @@
 // 	return(ret);
 // }
 
-void storepoint(int l, char** r_p, t_point **map)
+void storepoint(int l, char** r_p, t_view *view)
 {
 	int i;
 	int count;
@@ -28,21 +28,21 @@ void storepoint(int l, char** r_p, t_point **map)
 	i = 0;
 	while (r_p[i])
 	{
-		map[y][x].x = (float)x;
-		map[y][x].y = (float)y;
-		map[y][x].z = (float)ft_atoi(r_p[i]);
-		// printf("%f\n%f\n%f\n\n", map[y][x].x, map[y][x].y, map[y][x].z);
-		x++;
+		view->map[y][x].x = (float)x;
+		view->map[y][x].y = (float)y;
+		view->map[y][x].z = (float)ft_atoi(r_p[i]);
+		// printf("%f\n%f\n%f\n\n", view->map[y][x].x, view->map[y][x].y, view->map[y][x].z);
 		if (x == l)
 		{
 			y++;
 			x = 0;
 		}
+		x++;
 		i++;
 	}
 }
 
-void read_points(char *str, int height, t_point **map, t_stat *stat)
+void read_points(char *str, int height, t_view *view, t_stat *stat)
 {
 	int l;
 	int i;
@@ -51,14 +51,14 @@ void read_points(char *str, int height, t_point **map, t_stat *stat)
 	l = stat->w;
 	stat->h = height;
 	printf("%d\n%d\n", stat->h, stat->w);
-	map = (t_point**)malloc(sizeof(t_point*) * height);
+	view->map = (t_point**)malloc(sizeof(t_point*) * height);
 	while (i < l)
 	{
-		map[i] = (t_point*)malloc(sizeof(t_point) * l);
+		view->map[i] = (t_point*)malloc(sizeof(t_point) * l);
 		i++;
 	}
 	//ft_putendl("here");
-	storepoint(l, ft_strsplit(str,' '), map);
+	storepoint(l, ft_strsplit(str,' '), view);
 }
 
 //validate map
@@ -73,7 +73,7 @@ int counta(char **str)
 	return (i);
 }
 
-char *readfile(int fd, t_point **map, t_stat *stat)
+char *readfile(int fd, t_view *view, t_stat *stat)
 {
 	char *ret;
 	char *line;
@@ -98,7 +98,7 @@ char *readfile(int fd, t_point **map, t_stat *stat)
 		}
 		count++;
 	}
-	read_points(ret, count, map, stat);
+	read_points(ret, count, view, stat);
 	return (ret);
 }
 
@@ -116,8 +116,6 @@ void addpixels(t_view *view, t_stat *stat)
 	while(y < stat->h)
 	{
 		mlx_pixel_put(view->mlx, view->window, px, py, 0x00FF00);
-		// ft_putendl("here");
-		// printf("%f\n%f\n%f\n", view->map[y][x].x, view->map[y][x].y, view->map[y][x].z);
 		px += view->width / stat->w;
 		if (x == stat->w)
 		{
@@ -141,7 +139,7 @@ int main(int argc, char *argv[])
 	if (argc > 1)
 	{
 		fd = open(argv[1], O_RDONLY);
-		readfile(fd, view->map, stat);
+		readfile(fd, view, stat);
 	}
 	view->mlx = mlx_init();
 	view->width = 1000;
