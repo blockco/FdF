@@ -191,7 +191,6 @@ void addpixels(t_view *view, t_stat *stat)
 
 	x = 0;
 	y = 0;
-	scalepoints(view, stat);
 	while(y < stat->h)
 	{
 		d_x = fabs(view->map[y][x + 1].x - view->map[y][x].x);
@@ -332,6 +331,50 @@ void xrotation(t_view *view, float rad)
 	}
 }
 
+// void yrotation(t_view *view, float rad)
+// {
+// 	int x;
+// 	int y;
+// 	t_rotation 	r_points;
+// 	t_point		*middle;
+// 	middle = centerfind(view);
+// 	y = 0;
+// 	while (y < view->stats->h)
+// 	{
+// 		x = 0;
+// 		while (x < view->stats->w)
+// 		{
+// 			r_points.x = view->map[y][x].x - middle->x;
+// 			r_points.z = view->map[y][x].z - middle->z;
+// 			r_points.d = hypot(r_points.x, r_points.z);
+// 			r_points.theta = atan2(r_points.x, r_points.z) + rad;
+// 			view->map[y][x].z = r_points.d * cos(r_points.theta) + middle->z;
+// 			view->map[y][x].x = r_points.d * sin(r_points.theta) + middle->x;
+// 			x++;
+// 		}
+// 		y++;
+// 	}
+// }
+
+void pads(t_view *view)
+{
+	int x;
+	int y;
+
+	y = 0;
+	while (y < view->stats->h)
+	{
+		x = 0;
+		while (x < view->stats->w)
+		{
+			view->map[y][x].x += (view->stats->w) / 2;
+			view->map[y][x].y += (view->stats->h) / 4;
+			x++;
+		}
+		y++;
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	int fd;
@@ -350,7 +393,9 @@ int main(int argc, char *argv[])
 	view->width = 800;
 	view->height = 600;
 	view->window = mlx_new_window(view->mlx, view->width, view->height, "FdF");
-	xrotation(view, -.2);
+	pads(view);
+	xrotation(view, -.3);
+	scalepoints(view, stat);
 	addpixels(view, stat);
 	mlx_loop(view->mlx);
 }
