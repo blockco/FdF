@@ -45,4 +45,9 @@ typedef	struct		s_rotation
 	float	d;
 	float	theta;
 }					t_rotation;
+
+float	get_m_z(t_view *view);
+float	get_m_x(t_view *view);
+float	get_m_y(t_view *view);
+t_point	*centerfind(t_view *view);
 #endif

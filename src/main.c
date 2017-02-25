@@ -160,16 +160,20 @@ void scalepoints(t_view *view, t_stat *stat)
 {
 	int x;
 	int y;
+	int mx;
+	int my;
 
+	mx = get_m_x(view);
+	my = get_m_y(view);
 	x = 0;
 	y = 0;
 	while (y < stat->h)
 	{
 		while (x < stat->w)
 		{
-			view->map[y][x].x = view->map[y][x].x * (view->width / stat->w);
-			view->map[y][x].y = view->map[y][x].y * (view->width / stat->w);
-			view->map[y][x].z = view->map[y][x].z * (view->width / stat->w);
+			view->map[y][x].x = view->map[y][x].x * ((view->width / stat->w) / 2);
+			view->map[y][x].y = view->map[y][x].y * ((view->width / stat->w) / 2);
+			view->map[y][x].z = view->map[y][x].z * ((view->width / stat->w) / 2);
 			x++;
 		}
 		x = 0;
@@ -343,8 +347,8 @@ int main(int argc, char *argv[])
 	}
 	view->stats = stat;
 	view->mlx = mlx_init();
-	view->width = 1600;
-	view->height = 1200;
+	view->width = 800;
+	view->height = 600;
 	view->window = mlx_new_window(view->mlx, view->width, view->height, "FdF");
 	xrotation(view, -.2);
 	addpixels(view, stat);
