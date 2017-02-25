@@ -16,7 +16,7 @@
 // 	return(ret);
 // }
 
-void storepoint(int l, char** r_p, t_view *view)
+void storepoint(t_stat *stat, char** r_p, t_view *view)
 {
 	int i;
 	int count;
@@ -26,19 +26,25 @@ void storepoint(int l, char** r_p, t_view *view)
 	x = 0;
 	y = 0;
 	i = 0;
-	while (r_p[i])
+	while (y < stat->h)
 	{
-		printf("%d\n%d\n\n", x, y);
-		view->map[y][x].x = (float)x;
-		view->map[y][x].y = (float)y;
-		view->map[y][x].z = (float)ft_atoi(r_p[i]);
-		if (x == l - 1)
+		while (x < stat->w)
 		{
-			y++;
-			x = 0;
+			view->map[y][x].x = (float)x;
+			view->map[y][x].y = (float)y;
+			view->map[y][x].z = (float)ft_atoi(r_p[i]);
+			printf("%d\n%d\n%s\n%d\n\n", x, y, r_p[i], i);
+			x++;
+			i++;
 		}
-		x++;
-		i++;
+		y++;
+		x = 0;
+		// if (x == l - 1)
+		// {
+		// 	y++;
+		// 	x = 0;
+		// }
+		// x++;
 	}
 }
 
@@ -52,13 +58,13 @@ void read_points(char *str, int height, t_view *view, t_stat *stat)
 	stat->h = height;
 	printf("%d\n%d\n", stat->h, stat->w);
 	view->map = (t_point**)malloc(sizeof(t_point*) * height);
-	while (i <= l)
+	while (i < l)
 	{
 		view->map[i] = (t_point*)malloc(sizeof(t_point) * l);
 		i++;
 	}
 	//ft_putendl("here");
-	storepoint(l, ft_strsplit(str,' '), view);
+	storepoint(stat, ft_strsplit(str,' '), view);
 }
 
 //validate map
@@ -90,7 +96,10 @@ char *readfile(int fd, t_view *view, t_stat *stat)
 			stat->w = len;
 		}
 		else
+		{
+			ret = ft_strjoin(ret, " ");
 			ret = ft_strjoin(ret, line);
+		}
 		if (counta(ft_strsplit(line, ' ')) != len)
 		{
 			ft_putendl("error");
@@ -153,8 +162,10 @@ void scalepoints(t_view *view, t_stat *stat)
 	{
 		while (x < stat->w)
 		{
-			view->map[y][x].x = view->map[y][x].x * view->width / stat->w;
-			view->map[y][x].y = view->map[y][x].y * view->height / stat->h;
+			// printf("before: %f\n%f\n\n", view->map[y][x].x, view->map[y][x].y);
+			view->map[y][x].x = view->map[y][x].x * (view->width / stat->w);
+			view->map[y][x].y = view->map[y][x].y * (view->height / stat->h);
+			// printf("after: %f\n%f\n\n", view->map[y][x].x, view->map[y][x].y);
 			x++;
 		}
 		x = 0;
@@ -171,25 +182,28 @@ void addpixels(t_view *view, t_stat *stat)
 
 	x = 0;
 	y = 0;
-	px = 0;
-	py = 0;
+	// px = 0;
+	// py = 0;
+	scalepoints(view, stat);
 	while(y < stat->h)
 	{
-		mlx_pixel_put(view->mlx, view->window, px, py, 0x00FF00);
-		if (x < stat->w - 1)
-			drawline(view, view->map[y][x], view->map[y][x + 1]);
-		else if (y < stat->h - 1)
-			drawline(view, view->map[y][x], view->map[y + 1][x]);
+		mlx_pixel_put(view->mlx, view->window, view->map[y][x].x+1, view->map[y][x].y+1, 0x00FF00);
+		// if (x < stat->w - 1)
+		// 	drawline(view, view->map[y][x], view->map[y][x + 1]);
+		// else if (y < stat->h - 1)
+		// 	drawline(view, view->map[y][x], view->map[y + 1][x]);
 		if (x == stat->w)
 		{
 			y++;
 			x = 0;
-			px = 0;
-			py += view->height / stat->h;
+			// px = 0;
+			// py += view->height / stat->h;
 		}
 		else
-			px += view->width / stat->w;
-		x++;
+		{
+			// px += view->width / stat->w;
+			x++;
+		}
 	}
 }
 
