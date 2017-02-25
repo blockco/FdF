@@ -168,7 +168,8 @@ void scalepoints(t_view *view, t_stat *stat)
 		while (x < stat->w)
 		{
 			view->map[y][x].x = view->map[y][x].x * (view->width / stat->w);
-			view->map[y][x].y = view->map[y][x].y * (view->height / stat->h);
+			view->map[y][x].y = view->map[y][x].y * (view->width / stat->w);
+			view->map[y][x].z = view->map[y][x].z * (view->width / stat->w);
 			x++;
 		}
 		x = 0;
@@ -180,17 +181,33 @@ void addpixels(t_view *view, t_stat *stat)
 {
 	int	x;
 	int	y;
+	float d_x;
+	float d_y;
+	float delta;
 
 	x = 0;
 	y = 0;
 	scalepoints(view, stat);
 	while(y < stat->h)
 	{
+		d_x = fabs(view->map[y][x + 1].x - view->map[y][x].x);
+		d_y = fabs(view->map[y][x + 1].y - view->map[y][x].y);
+		delta = d_x / d_y;
 		mlx_pixel_put(view->mlx, view->window, view->map[y][x].x, view->map[y][x].y, 0x00FF00);
 		if (x < stat->w - 1)
-			drawline(view, view->map[y][x], view->map[y][x + 1]);
-		if (y < stat->h - 1)
-			drawline_y(view, view->map[y][x], view->map[y + 1][x]);
+		{
+			if (delta < 1.0f)
+				drawline_y(view, view->map[y][x], view->map[y][x + 1]);
+			else
+				drawline(view, view->map[y][x], view->map[y][x + 1]);
+		}
+		if (y < stat->h - 1.0f)
+			{
+				if (delta >= 1.0f)
+					drawline_y(view, view->map[y][x], view->map[y + 1][x]);
+				else
+					drawline(view, view->map[y][x], view->map[y + 1][x]);
+			}
 		if (x == stat->w)
 		{
 			y++;
@@ -299,7 +316,6 @@ void xrotation(t_view *view, float rad)
 		x = 0;
 		while (x < view->stats->w)
 		{
-			// printf("before: %f\n", );
 			r_points.y = view->map[y][x].y - middle->y;
 			r_points.z = view->map[y][x].z - middle->z;
 			r_points.d = hypot(r_points.y, r_points.z);
@@ -327,10 +343,10 @@ int main(int argc, char *argv[])
 	}
 	view->stats = stat;
 	view->mlx = mlx_init();
-	view->width = 700;
-	view->height = 700;
+	view->width = 1600;
+	view->height = 1200;
 	view->window = mlx_new_window(view->mlx, view->width, view->height, "FdF");
-	xrotation(view, .1);
+	xrotation(view, -.2);
 	addpixels(view, stat);
 	mlx_loop(view->mlx);
 }
