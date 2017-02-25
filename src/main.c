@@ -28,11 +28,11 @@ void storepoint(int l, char** r_p, t_view *view)
 	i = 0;
 	while (r_p[i])
 	{
+		printf("%d\n%d\n\n", x, y);
 		view->map[y][x].x = (float)x;
 		view->map[y][x].y = (float)y;
 		view->map[y][x].z = (float)ft_atoi(r_p[i]);
-		// printf("%f\n%f\n%f\n\n", view->map[y][x].x, view->map[y][x].y, view->map[y][x].z);
-		if (x == l)
+		if (x == l - 1)
 		{
 			y++;
 			x = 0;
@@ -52,7 +52,7 @@ void read_points(char *str, int height, t_view *view, t_stat *stat)
 	stat->h = height;
 	printf("%d\n%d\n", stat->h, stat->w);
 	view->map = (t_point**)malloc(sizeof(t_point*) * height);
-	while (i < l)
+	while (i <= l)
 	{
 		view->map[i] = (t_point*)malloc(sizeof(t_point) * l);
 		i++;
@@ -102,6 +102,66 @@ char *readfile(int fd, t_view *view, t_stat *stat)
 	return (ret);
 }
 
+int swap_var(t_point p0, t_point p1)
+{
+	float temp;
+	if (fabs(p1.x - p0.x) > fabs(p1.y - p0.y))
+		return (0);
+	temp = p0.y;
+	p0.y = p0.x;
+	p0.x = temp;
+	temp = p1.y;
+	p1.y = p1.x;
+	p1.x = temp;
+	return 1;
+}
+
+void drawline(t_view *view, t_point p0, t_point p1)
+{
+	float delta[3];
+	float error;
+	float slope;
+	int dir;
+
+	dir = swap_var(p0,p1);
+	delta[0] = p1.x - p0.x;
+	delta[1] = p1.y - p0.y;
+	delta[2] = p1.z - p0.z;
+	slope = fabs(delta[1] / delta[0]);
+	error = -1.0;
+	while ((int)p0.x != (int)p1.x)
+	{
+		mlx_pixel_put(view->mlx, view->window, dir ? p0.y : p0.x, dir ? p0.x : p0.y, 0x00FF00);
+		error += slope;
+		if (error >= 0.0)
+		{
+			p0.y += (p0.y > p1.y) ? -1.0 : 1.0;
+			error -= 1.0;
+		}
+		p0.x += (p0.x > p1.x) ? -1.0 : 1.0;
+	}
+}
+
+void scalepoints(t_view *view, t_stat *stat)
+{
+	int x;
+	int y;
+
+	x = 0;
+	y = 0;
+	while (y < stat->h)
+	{
+		while (x < stat->w)
+		{
+			view->map[y][x].x = view->map[y][x].x * view->width / stat->w;
+			view->map[y][x].y = view->map[y][x].y * view->height / stat->h;
+			x++;
+		}
+		x = 0;
+		y++;
+	}
+}
+
 void addpixels(t_view *view, t_stat *stat)
 {
 	int	x;
@@ -111,19 +171,24 @@ void addpixels(t_view *view, t_stat *stat)
 
 	x = 0;
 	y = 0;
-	px = view->width / stat->w;
-	py = view->height / stat->h;
+	px = 0;
+	py = 0;
 	while(y < stat->h)
 	{
 		mlx_pixel_put(view->mlx, view->window, px, py, 0x00FF00);
-		px += view->width / stat->w;
+		if (x < stat->w - 1)
+			drawline(view, view->map[y][x], view->map[y][x + 1]);
+		else if (y < stat->h - 1)
+			drawline(view, view->map[y][x], view->map[y + 1][x]);
 		if (x == stat->w)
 		{
 			y++;
 			x = 0;
-			px = view->width / stat->w;
+			px = 0;
 			py += view->height / stat->h;
 		}
+		else
+			px += view->width / stat->w;
 		x++;
 	}
 }
@@ -142,8 +207,8 @@ int main(int argc, char *argv[])
 		readfile(fd, view, stat);
 	}
 	view->mlx = mlx_init();
-	view->width = 1000;
-	view->height = 1000;
+	view->width = 700;
+	view->height = 700;
 	view->window = mlx_new_window(view->mlx, view->width, view->height, "FdF");
 	addpixels(view, stat);
 	mlx_loop(view->mlx);
