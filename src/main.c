@@ -151,6 +151,32 @@ void drawline(t_view *view, t_point p0, t_point p1)
 	}
 }
 
+void drawline_y(t_view *view, t_point p0, t_point p1)
+{
+	float delta[3];
+	float error;
+	float slope;
+	int dir;
+
+	dir = swap_var(p0,p1);
+	delta[0] = p1.y - p0.y;
+	delta[1] = p1.x - p0.x;
+	delta[2] = p1.z - p0.z;
+	slope = fabs(delta[1] / delta[0]);
+	error = -1.0;
+	while ((int)p0.y != (int)p1.y)
+	{
+		mlx_pixel_put(view->mlx, view->window, dir ? p0.x : p0.y, dir ? p0.y : p0.x, 0x00FF00);
+		error += slope;
+		if (error >= 0.0)
+		{
+			p0.x += (p0.x > p1.x) ? -1.0 : 1.0;
+			error -= 1.0;
+		}
+		p0.y += (p0.y > p1.y) ? -1.0 : 1.0;
+	}
+}
+
 void scalepoints(t_view *view, t_stat *stat)
 {
 	int x;
@@ -187,21 +213,18 @@ void addpixels(t_view *view, t_stat *stat)
 	scalepoints(view, stat);
 	while(y < stat->h)
 	{
-		mlx_pixel_put(view->mlx, view->window, view->map[y][x].x+1, view->map[y][x].y+1, 0x00FF00);
-		// if (x < stat->w - 1)
-		// 	drawline(view, view->map[y][x], view->map[y][x + 1]);
-		// else if (y < stat->h - 1)
-		// 	drawline(view, view->map[y][x], view->map[y + 1][x]);
+		mlx_pixel_put(view->mlx, view->window, view->map[y][x].x, view->map[y][x].y, 0x00FF00);
+		if (x < stat->w - 1)
+			drawline(view, view->map[y][x], view->map[y][x + 1]);
+		if (y < stat->h - 1)
+			drawline_y(view, view->map[y][x], view->map[y + 1][x]);
 		if (x == stat->w)
 		{
 			y++;
 			x = 0;
-			// px = 0;
-			// py += view->height / stat->h;
 		}
 		else
 		{
-			// px += view->width / stat->w;
 			x++;
 		}
 	}
