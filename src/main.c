@@ -2,20 +2,6 @@
 #include "../libft/libft.h"
 #include <stdio.h>
 
-// int findlen(char *map, int h)
-// {
-// 	int i;
-// 	int ret;
-//
-// 	ret = 0;
-// 	i = 0;
-// 	while (*map)
-// 	{
-// 		if ()
-// 	}
-// 	return(ret);
-// }
-
 void storepoint(t_stat *stat, char** r_p, t_view *view)
 {
 	int i;
@@ -33,18 +19,12 @@ void storepoint(t_stat *stat, char** r_p, t_view *view)
 			view->map[y][x].x = (float)x;
 			view->map[y][x].y = (float)y;
 			view->map[y][x].z = (float)ft_atoi(r_p[i]);
-			printf("%d\n%d\n%s\n%d\n\n", x, y, r_p[i], i);
+			// printf("%d\n%d\n%s\n%d\n\n", x, y, r_p[i], i);
 			x++;
 			i++;
 		}
 		y++;
 		x = 0;
-		// if (x == l - 1)
-		// {
-		// 	y++;
-		// 	x = 0;
-		// }
-		// x++;
 	}
 }
 
@@ -56,14 +36,13 @@ void read_points(char *str, int height, t_view *view, t_stat *stat)
 	i = 0;
 	l = stat->w;
 	stat->h = height;
-	printf("%d\n%d\n", stat->h, stat->w);
+	// printf("%d\n%d\n", stat->h, stat->w);
 	view->map = (t_point**)malloc(sizeof(t_point*) * height);
 	while (i < l)
 	{
 		view->map[i] = (t_point*)malloc(sizeof(t_point) * l);
 		i++;
 	}
-	//ft_putendl("here");
 	storepoint(stat, ft_strsplit(str,' '), view);
 }
 
@@ -188,10 +167,8 @@ void scalepoints(t_view *view, t_stat *stat)
 	{
 		while (x < stat->w)
 		{
-			// printf("before: %f\n%f\n\n", view->map[y][x].x, view->map[y][x].y);
 			view->map[y][x].x = view->map[y][x].x * (view->width / stat->w);
 			view->map[y][x].y = view->map[y][x].y * (view->height / stat->h);
-			// printf("after: %f\n%f\n\n", view->map[y][x].x, view->map[y][x].y);
 			x++;
 		}
 		x = 0;
@@ -203,13 +180,9 @@ void addpixels(t_view *view, t_stat *stat)
 {
 	int	x;
 	int	y;
-	int	px;
-	int	py;
 
 	x = 0;
 	y = 0;
-	// px = 0;
-	// py = 0;
 	scalepoints(view, stat);
 	while(y < stat->h)
 	{
@@ -224,9 +197,118 @@ void addpixels(t_view *view, t_stat *stat)
 			x = 0;
 		}
 		else
+			x++;
+	}
+}
+
+float	get_m_y(t_view *view)
+{
+	int		i;
+	int		y;
+	int		x;
+	float	sum;
+
+	i = 0;
+	y = 0;
+	sum = 0;
+	while(y < view->stats->h)
+	{
+		x = 0;
+		while (x < view->stats->w)
 		{
+			sum += view->map[y][x].y;
+			i++;
 			x++;
 		}
+		y++;
+	}
+	return (sum / (float)i);
+}
+
+float	get_m_x(t_view *view)
+{
+	int		i;
+	int		y;
+	int		x;
+	float	sum;
+
+	i = 0;
+	y = 0;
+	sum = 0;
+	ft_putendl("here");
+	while(y < view->stats->h)
+	{
+		x = 0;
+		while (x < view->stats->w)
+		{
+			sum += view->map[y][x].x;
+			i++;
+			x++;
+		}
+		y++;
+	}
+	return (sum / (float)i);
+}
+
+float	get_m_z(t_view *view)
+{
+	int		i;
+	int		y;
+	int		x;
+	float	sum;
+
+	i = 0;
+	y = 0;
+	sum = 0;
+	while(y < view->stats->h)
+	{
+		x = 0;
+		while (x < view->stats->w)
+		{
+			sum += view->map[y][x].z;
+			i++;
+			x++;
+		}
+		y++;
+	}
+	return (sum / (float)i);
+}
+
+t_point	*centerfind(t_view *view)
+{
+	t_point *ret;
+
+	ret = (t_point*)malloc(sizeof(t_point));
+
+	ret->x = get_m_x(view);
+	ret->y = get_m_y(view);
+	ret->z = get_m_z(view);
+	return (ret);
+}
+
+void xrotation(t_view *view, float rad)
+{
+	int x;
+	int y;
+	t_rotation 	r_points;
+	t_point		*middle;
+	middle = centerfind(view);
+	y = 0;
+	while (y < view->stats->h)
+	{
+		x = 0;
+		while (x < view->stats->w)
+		{
+			// printf("before: %f\n", );
+			r_points.y = view->map[y][x].y - middle->y;
+			r_points.z = view->map[y][x].z - middle->z;
+			r_points.d = hypot(r_points.y, r_points.z);
+			r_points.theta = atan2(r_points.y, r_points.z) + rad;
+			view->map[y][x].z = r_points.d * cos(r_points.theta) + middle->z;
+			view->map[y][x].y = r_points.d * sin(r_points.theta) + middle->y;
+			x++;
+		}
+		y++;
 	}
 }
 
@@ -243,11 +325,12 @@ int main(int argc, char *argv[])
 		fd = open(argv[1], O_RDONLY);
 		readfile(fd, view, stat);
 	}
+	view->stats = stat;
 	view->mlx = mlx_init();
 	view->width = 700;
 	view->height = 700;
 	view->window = mlx_new_window(view->mlx, view->width, view->height, "FdF");
+	xrotation(view, .1);
 	addpixels(view, stat);
 	mlx_loop(view->mlx);
-	//	return 0;
 }

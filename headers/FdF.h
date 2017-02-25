@@ -36,4 +36,13 @@ typedef struct		s_view
 	t_point	**map;
 	t_stat	*stats;
 }					t_view;
+
+typedef	struct		s_rotation
+{
+	float	x;
+	float	y;
+	float	z;
+	float	d;
+	float	theta;
+}					t_rotation;
 #endif
