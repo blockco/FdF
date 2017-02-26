@@ -84,3 +84,29 @@ float	get_m_z(t_view *view)
 	}
 	return (sum / (float)i);
 }
+
+void	addpixels(t_view *view, t_stat *stat)
+{
+	int		x;
+	int		y;
+	float	delta;
+
+	x = 0;
+	y = 0;
+	while (y < stat->h)
+	{
+		delta = fabs(view->map[y][x + 1].x - view->map[y][x].x) /
+		fabs(view->map[y][x + 1].y - view->map[y][x].y);
+		if (x < stat->w - 1)
+			draw_w(delta, view, x, y);
+		if (y < stat->h - 1)
+			draw_h(delta, view, x, y);
+		if (x == stat->w - 1)
+		{
+			y++;
+			x = 0;
+		}
+		else
+			x++;
+	}
+}
