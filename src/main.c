@@ -36,11 +36,13 @@ void read_points(char *str, int height, t_view *view, t_stat *stat)
 	i = 0;
 	l = stat->w;
 	stat->h = height;
-	// printf("%d\n%d\n", stat->h, stat->w);
+	printf("%f\n%f\n", stat->h, stat->w);
 	view->map = (t_point**)malloc(sizeof(t_point*) * height);
+	ft_bzero(view->map, sizeof(t_point*) * height);
 	while (i < stat->h)
 	{
 		view->map[i] = (t_point*)malloc(sizeof(t_point) * l);
+		ft_bzero(view->map[i], sizeof(t_point) * l);
 		i++;
 	}
 	storepoint(stat, ft_strsplit(str,' '), view);
@@ -210,6 +212,9 @@ void addpixels(t_view *view, t_stat *stat)
 		}
 		if (y < stat->h - 1)
 		{
+			if (delta >= 1.0f)
+				drawline_y(view, view->map[y][x], view->map[y + 1][x]);
+			else
 				drawline_y(view, view->map[y][x], view->map[y + 1][x]);
 		}
 		if (x == stat->w)
@@ -300,6 +305,7 @@ t_point	*centerfind(t_view *view)
 	t_point *ret;
 
 	ret = (t_point*)malloc(sizeof(t_point));
+	ft_bzero(ret, sizeof(t_point));
 
 	ret->x = get_m_x(view);
 	ret->y = get_m_y(view);
@@ -368,8 +374,8 @@ void pads(t_view *view)
 		x = 0;
 		while (x < view->stats->w)
 		{
-			view->map[y][x].x += (view->stats->w) / 2;
-			view->map[y][x].y += (view->stats->h) / 4;
+			view->map[y][x].x += (view->width) / 4;
+			view->map[y][x].y += (view->height) / 4;
 			x++;
 		}
 		y++;
@@ -384,6 +390,8 @@ int main(int argc, char *argv[])
 
 	stat = (t_stat*)malloc(sizeof(t_stat));
 	view = (t_view*)malloc(sizeof(t_view));
+	ft_bzero(view, sizeof(t_view));
+	ft_bzero(stat, sizeof(t_stat));
 	if (argc > 1)
 	{
 		fd = open(argv[1], O_RDONLY);
@@ -394,9 +402,9 @@ int main(int argc, char *argv[])
 	view->width = 1600;
 	view->height = 800;
 	view->window = mlx_new_window(view->mlx, view->width, view->height, "FdF");
+	scalepoints(view, stat);
 	pads(view);
 	xrotation(view, -.3);
-	scalepoints(view, stat);
 	addpixels(view, stat);
 	mlx_loop(view->mlx);
 }

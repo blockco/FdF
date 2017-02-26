@@ -16,8 +16,8 @@ typedef struct		s_point
 
 typedef struct		s_stat
 {
-	int			h;
-	int			w;
+	float			h;
+	float			w;
 }					t_stat;
 
 typedef struct		s_view
@@ -25,8 +25,8 @@ typedef struct		s_view
 	void	*mlx;
 	void	*window;
 	void	*image;
-	int		width;
-	int		height;
+	float		width;
+	float		height;
 	char 	*name;
 	int		bpp;
 	int		sl;
