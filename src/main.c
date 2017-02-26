@@ -19,7 +19,6 @@ void storepoint(t_stat *stat, char** r_p, t_view *view)
 			view->map[y][x].x = (float)x;
 			view->map[y][x].y = (float)y;
 			view->map[y][x].z = (float)ft_atoi(r_p[i]);
-			// printf("%d\n%d\n%s\n%d\n\n", x, y, r_p[i], i);
 			x++;
 			i++;
 		}
@@ -47,8 +46,6 @@ void read_points(char *str, int height, t_view *view, t_stat *stat)
 	}
 	storepoint(stat, ft_strsplit(str,' '), view);
 }
-
-//validate map
 
 int counta(char **str)
 {
@@ -95,6 +92,7 @@ char *readfile(int fd, t_view *view, t_stat *stat)
 int swap_var(t_point p0, t_point p1)
 {
 	float temp;
+
 	if (fabs(p1.x - p0.x) > fabs(p1.y - p0.y))
 		return (0);
 	temp = p0.y;
@@ -176,10 +174,6 @@ void scalepoints(t_view *view, t_stat *stat)
 			view->map[y][x].x *= ((view->height / stat->h) / 2);
 			view->map[y][x].y *= ((view->height / stat->h) / 2);
 			view->map[y][x].z *= ((view->width / stat->w) / 2);
-			// if (view->map[y][x].x == 0)
-			// 	view->map[y][x].x += view->map[y][x].x + ((view->height / stat->h) / 2);
-			// if (view->map[y][x].y == 0)
-			// 	view->map[y][x].x += view->map[y][x].x + ((view->height / stat->h) / 2);
 			x++;
 		}
 		x = 0;
@@ -260,7 +254,6 @@ float	get_m_x(t_view *view)
 	i = 0;
 	y = 0;
 	sum = 0;
-	ft_putendl("here");
 	while(y < view->stats->h)
 	{
 		x = 0;
@@ -337,30 +330,30 @@ void xrotation(t_view *view, float rad)
 	}
 }
 
-// void yrotation(t_view *view, float rad)
-// {
-// 	int x;
-// 	int y;
-// 	t_rotation 	r_points;
-// 	t_point		*middle;
-// 	middle = centerfind(view);
-// 	y = 0;
-// 	while (y < view->stats->h)
-// 	{
-// 		x = 0;
-// 		while (x < view->stats->w)
-// 		{
-// 			r_points.x = view->map[y][x].x - middle->x;
-// 			r_points.z = view->map[y][x].z - middle->z;
-// 			r_points.d = hypot(r_points.x, r_points.z);
-// 			r_points.theta = atan2(r_points.x, r_points.z) + rad;
-// 			view->map[y][x].z = r_points.d * cos(r_points.theta) + middle->z;
-// 			view->map[y][x].x = r_points.d * sin(r_points.theta) + middle->x;
-// 			x++;
-// 		}
-// 		y++;
-// 	}
-// }
+void yrotation(t_view *view, float rad)
+{
+	int x;
+	int y;
+	t_rotation 	r_points;
+	t_point		*middle;
+	middle = centerfind(view);
+	y = 0;
+	while (y < view->stats->h)
+	{
+		x = 0;
+		while (x < view->stats->w)
+		{
+			r_points.x = view->map[y][x].x - middle->x;
+			r_points.z = view->map[y][x].z - middle->z;
+			r_points.d = hypot(r_points.x, r_points.z);
+			r_points.theta = atan2(r_points.x, r_points.z) + rad;
+			view->map[y][x].z = r_points.d * cos(r_points.theta) + middle->z;
+			view->map[y][x].x = r_points.d * sin(r_points.theta) + middle->x;
+			x++;
+		}
+		y++;
+	}
+}
 
 void pads(t_view *view)
 {
@@ -379,6 +372,13 @@ void pads(t_view *view)
 		}
 		y++;
 	}
+}
+
+int checkkey(int key, t_view *view)
+{
+	if (key == 53)
+		exit(1);
+	return (1);
 }
 
 int main(int argc, char *argv[])
@@ -403,7 +403,8 @@ int main(int argc, char *argv[])
 	view->window = mlx_new_window(view->mlx, view->width, view->height, "FdF");
 	scalepoints(view, stat);
 	pads(view);
-	// xrotation(view, -.2);
+	xrotation(view, -.2);
 	addpixels(view, stat);
+	mlx_key_hook(view->window, checkkey, view);
 	mlx_loop(view->mlx);
 }
