@@ -200,6 +200,7 @@ void addpixels(t_view *view, t_stat *stat)
 		d_x = fabs(view->map[y][x + 1].x - view->map[y][x].x);
 		d_y = fabs(view->map[y][x + 1].y - view->map[y][x].y);
 		delta = d_x / d_y;
+		// mlx_pixel_put(view->mlx, view->window, view->map[y][x].x, view->map[y][x].y, 0x00FF00);
 		if (x < stat->w - 1)
 		{
 			if (delta < 1.0f)
@@ -207,11 +208,8 @@ void addpixels(t_view *view, t_stat *stat)
 			else
 				drawline(view, view->map[y][x], view->map[y][x + 1]);
 		}
-		if (y < stat->h - 1.0f)
+		if (y < stat->h - 1)
 		{
-			if (delta > 1.0f)
-				drawline_y(view, view->map[y][x], view->map[y + 1][x]);
-			else
 				drawline_y(view, view->map[y][x], view->map[y + 1][x]);
 		}
 		if (x == stat->w)
@@ -370,8 +368,8 @@ void pads(t_view *view)
 		x = 0;
 		while (x < view->stats->w)
 		{
-			view->map[y][x].x += (view->stats->w) / 3;
-			view->map[y][x].y += (view->stats->h) / 2;
+			view->map[y][x].x += (view->stats->w) / 2;
+			view->map[y][x].y += (view->stats->h) / 4;
 			x++;
 		}
 		y++;
@@ -394,10 +392,10 @@ int main(int argc, char *argv[])
 	view->stats = stat;
 	view->mlx = mlx_init();
 	view->width = 1600;
-	view->height = 1200;
+	view->height = 800;
 	view->window = mlx_new_window(view->mlx, view->width, view->height, "FdF");
 	pads(view);
-	xrotation(view, -.4);
+	xrotation(view, -.3);
 	scalepoints(view, stat);
 	addpixels(view, stat);
 	mlx_loop(view->mlx);
