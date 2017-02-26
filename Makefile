@@ -1,6 +1,6 @@
 NAME = fdf
 
-CC = gcc
+CC = gcc -Wall -Wextra -Werror
 CFLAGS = -Wall -Wextra -Werror
 
 SRC = gnl/get_next_line.c src/*.c

@@ -5,7 +5,6 @@
 void storepoint(t_stat *stat, char** r_p, t_view *view)
 {
 	int i;
-	int count;
 	int x;
 	int y;
 
@@ -35,7 +34,6 @@ void read_points(char *str, int height, t_view *view, t_stat *stat)
 	i = 0;
 	l = stat->w;
 	stat->h = height;
-	printf("%f\n%f\n", stat->h, stat->w);
 	view->map = (t_point**)malloc(sizeof(t_point*) * height);
 	ft_bzero(view->map, sizeof(t_point*) * height);
 	while (i < stat->h)
@@ -57,12 +55,16 @@ int counta(char **str)
 	return (i);
 }
 
+void tellerror()
+{
+	ft_putendl("error");
+	exit(0);
+}
 char *readfile(int fd, t_view *view, t_stat *stat)
 {
 	char *ret;
 	char *line;
 	int count;
-	int len;
 
 	count  = 0;
 	while (get_next_line(fd, &line))
@@ -70,19 +72,15 @@ char *readfile(int fd, t_view *view, t_stat *stat)
 		if (count == 0)
 		{
 			ret = ft_strdup(line);
-			len = counta(ft_strsplit(ret, ' '));
-			stat->w = len;
+			stat->w = counta(ft_strsplit(ret, ' '));
 		}
 		else
 		{
 			ret = ft_strjoin(ret, " ");
 			ret = ft_strjoin(ret, line);
 		}
-		if (counta(ft_strsplit(line, ' ')) != len)
-		{
-			ft_putendl("error");
-			exit(0);
-		}
+		if (counta(ft_strsplit(line, ' ')) != stat->w)
+			tellerror();
 		count++;
 	}
 	read_points(ret, count, view, stat);
@@ -181,35 +179,38 @@ void scalepoints(t_view *view, t_stat *stat)
 	}
 }
 
+void draw_w(float delta, t_view *view, int x, int y)
+{
+	if (delta < 1.0f)
+		drawline_y(view, view->map[y][x], view->map[y][x + 1]);
+	else
+		drawline(view, view->map[y][x], view->map[y][x + 1]);
+}
+
+void draw_h(float delta, t_view *view, int x, int y)
+{
+	if (delta >= 1.0f)
+		drawline_y(view, view->map[y][x], view->map[y + 1][x]);
+	else
+		drawline_y(view, view->map[y][x], view->map[y + 1][x]);
+}
+
 void addpixels(t_view *view, t_stat *stat)
 {
 	int	x;
 	int	y;
-	float d_x;
-	float d_y;
 	float delta;
 
 	x = 0;
 	y = 0;
 	while(y < stat->h)
 	{
-		d_x = fabs(view->map[y][x + 1].x - view->map[y][x].x);
-		d_y = fabs(view->map[y][x + 1].y - view->map[y][x].y);
-		delta = d_x / d_y;
+		delta = fabs(view->map[y][x + 1].x - view->map[y][x].x) /
+		fabs(view->map[y][x + 1].y - view->map[y][x].y);
 		if (x < stat->w - 1)
-		{
-			if (delta < 1.0f)
-				drawline_y(view, view->map[y][x], view->map[y][x + 1]);
-			else
-				drawline(view, view->map[y][x], view->map[y][x + 1]);
-		}
+			draw_w(delta, view, x, y);
 		if (y < stat->h - 1)
-		{
-			if (delta >= 1.0f)
-				drawline_y(view, view->map[y][x], view->map[y + 1][x]);
-			else
-				drawline_y(view, view->map[y][x], view->map[y + 1][x]);
-		}
+			draw_h(delta, view, x, y);
 		if (x == stat->w - 1)
 		{
 			y++;
@@ -330,31 +331,6 @@ void xrotation(t_view *view, float rad)
 	}
 }
 
-void yrotation(t_view *view, float rad)
-{
-	int x;
-	int y;
-	t_rotation 	r_points;
-	t_point		*middle;
-	middle = centerfind(view);
-	y = 0;
-	while (y < view->stats->h)
-	{
-		x = 0;
-		while (x < view->stats->w)
-		{
-			r_points.x = view->map[y][x].x - middle->x;
-			r_points.z = view->map[y][x].z - middle->z;
-			r_points.d = hypot(r_points.x, r_points.z);
-			r_points.theta = atan2(r_points.x, r_points.z) + rad;
-			view->map[y][x].z = r_points.d * cos(r_points.theta) + middle->z;
-			view->map[y][x].x = r_points.d * sin(r_points.theta) + middle->x;
-			x++;
-		}
-		y++;
-	}
-}
-
 void pads(t_view *view)
 {
 	int x;
@@ -377,7 +353,10 @@ void pads(t_view *view)
 int checkkey(int key, t_view *view)
 {
 	if (key == 53)
+	{
+		free(view);
 		exit(1);
+	}
 	return (1);
 }
 
