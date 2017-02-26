@@ -56,6 +56,7 @@ int		main(int argc, char *argv[])
 	if (argc == 2)
 	{
 		fd = open(argv[1], O_RDONLY);
+		checkfd(fd);
 		readfile(fd, view, stat);
 	}
 	else

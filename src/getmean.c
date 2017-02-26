@@ -13,6 +13,12 @@
 #include "../headers/ft_fdf.h"
 #include "../libft/libft.h"
 
+void	checkfd(int fd)
+{
+	if (fd == -1)
+		tellerror();
+}
+
 float	get_m_y(t_view *view)
 {
 	int		i;

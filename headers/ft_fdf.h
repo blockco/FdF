@@ -82,4 +82,5 @@ t_point				*centerfind(t_view *view);
 void				xrotation(t_view *view, float rad);
 void				pads(t_view *view);
 int					checkkey(int key, t_view *view);
+void				checkfd(int fd);
 #endif
