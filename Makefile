@@ -3,7 +3,12 @@ NAME = fdf
 CC = gcc -Wall -Wextra -Werror
 CFLAGS = -Wall -Wextra -Werror
 
-SRC = gnl/get_next_line.c src/*.c
+SRC = gnl/get_next_line.c \
+	src/main.c \
+	src/points.c \
+	src/drawline.c \
+	src/scale.c \
+	src/getmean.c
 
 FRAMEWORKS = -framework OpenGL -framework Appkit
 
