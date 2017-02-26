@@ -1,7 +1,19 @@
-#include "../headers/FdF.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   scale.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rpassafa <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/02/25 21:11:34 by rpassafa          #+#    #+#             */
+/*   Updated: 2017/02/25 21:11:35 by rpassafa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../headers/ft_fdf.h"
 #include "../libft/libft.h"
 
-void scalepoints(t_view *view, t_stat *stat)
+void		scalepoints(t_view *view, t_stat *stat)
 {
 	int x;
 	int y;
@@ -26,7 +38,7 @@ void scalepoints(t_view *view, t_stat *stat)
 	}
 }
 
-t_point	*centerfind(t_view *view)
+t_point		*centerfind(t_view *view)
 {
 	t_point *ret;
 
@@ -38,11 +50,11 @@ t_point	*centerfind(t_view *view)
 	return (ret);
 }
 
-void xrotation(t_view *view, float rad)
+void		xrotation(t_view *view, float rad)
 {
-	int x;
-	int y;
-	t_rotation 	r_points;
+	int			x;
+	int			y;
+	t_rotation	r_points;
 	t_point		*middle;
 
 	middle = centerfind(view);
@@ -64,7 +76,7 @@ void xrotation(t_view *view, float rad)
 	}
 }
 
-void pads(t_view *view)
+void		pads(t_view *view)
 {
 	int x;
 	int y;

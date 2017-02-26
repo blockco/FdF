@@ -1,7 +1,19 @@
-#include "../headers/FdF.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   points.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rpassafa <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/02/25 22:00:30 by rpassafa          #+#    #+#             */
+/*   Updated: 2017/02/25 22:00:31 by rpassafa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../headers/ft_fdf.h"
 #include "../libft/libft.h"
 
-void storepoint(t_stat *stat, char** r_p, t_view *view)
+void	storepoint(t_stat *stat, char **r_p, t_view *view)
 {
 	int i;
 	int x;
@@ -25,7 +37,7 @@ void storepoint(t_stat *stat, char** r_p, t_view *view)
 	}
 }
 
-void read_points(char *str, int height, t_view *view, t_stat *stat)
+void	read_points(char *str, int height, t_view *view, t_stat *stat)
 {
 	int l;
 	int i;
@@ -41,26 +53,26 @@ void read_points(char *str, int height, t_view *view, t_stat *stat)
 		ft_bzero(view->map[i], sizeof(t_point) * l);
 		i++;
 	}
-	storepoint(stat, ft_strsplit(str,' '), view);
+	storepoint(stat, ft_strsplit(str, ' '), view);
 }
 
-int counta(char **str)
+int		counta(char **str)
 {
 	int i;
 
 	i = 0;
-	while(str[i])
+	while (str[i])
 		i++;
 	return (i);
 }
 
-char *readfile(int fd, t_view *view, t_stat *stat)
+char	*readfile(int fd, t_view *view, t_stat *stat)
 {
-	char *ret;
-	char *line;
-	int count;
+	char	*ret;
+	char	*line;
+	int		count;
 
-	count  = 0;
+	count = 0;
 	while (get_next_line(fd, &line))
 	{
 		if (count == 0)

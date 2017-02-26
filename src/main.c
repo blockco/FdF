@@ -1,21 +1,33 @@
-#include "../headers/FdF.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: rpassafa <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2017/02/25 22:02:28 by rpassafa          #+#    #+#             */
+/*   Updated: 2017/02/25 22:02:29 by rpassafa         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "../headers/ft_fdf.h"
 #include "../libft/libft.h"
 
-void tellerror()
+void	tellerror(void)
 {
 	ft_putendl("error");
 	exit(0);
 }
 
-void addpixels(t_view *view, t_stat *stat)
+void	addpixels(t_view *view, t_stat *stat)
 {
-	int	x;
-	int	y;
-	float delta;
+	int		x;
+	int		y;
+	float	delta;
 
 	x = 0;
 	y = 0;
-	while(y < stat->h)
+	while (y < stat->h)
 	{
 		delta = fabs(view->map[y][x + 1].x - view->map[y][x].x) /
 		fabs(view->map[y][x + 1].y - view->map[y][x].y);
@@ -33,7 +45,7 @@ void addpixels(t_view *view, t_stat *stat)
 	}
 }
 
-int checkkey(int key, t_view *view)
+int		checkkey(int key, t_view *view)
 {
 	if (key == 53)
 	{
@@ -43,9 +55,9 @@ int checkkey(int key, t_view *view)
 	return (1);
 }
 
-int main(int argc, char *argv[])
+int		main(int argc, char *argv[])
 {
-	int fd;
+	int		fd;
 	t_view	*view;
 	t_stat	*stat;
 

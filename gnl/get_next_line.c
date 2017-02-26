@@ -3,12 +3,13 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: rpassafa <rpassafa@student.42.us>          +#+  +:+       +#+        */
+/*   By: rpassafa <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/10/31 14:09:54 by rpassafa          #+#    #+#             */
-/*   Updated: 2016/10/31 15:11:12 by rpassafa         ###   ########.us       */
+/*   Created: 2017/02/25 22:04:22 by rpassafa          #+#    #+#             */
+/*   Updated: 2017/02/25 22:04:25 by rpassafa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 #include "get_next_line.h"
 
 int		read_tmp(const int fd, char **buff)

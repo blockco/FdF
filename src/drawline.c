@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../headers/FdF.h"
+#include "../headers/ft_fdf.h"
 #include "../libft/libft.h"
 
 int		swap_var(t_point p0, t_point p1)
